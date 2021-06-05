@@ -3,10 +3,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 
-import { AccountService, AlertService } from '@app/_services';
+import { AccountService, AlertService, CityService } from '@app/_services';
 import { MustMatch } from '@app/_helpers';
 
-import swal from'sweetalert2';
+
+
 import Swal from 'sweetalert2';
 
 
@@ -15,29 +16,36 @@ export class RegisterComponent implements OnInit {
     form: FormGroup;
     loading = false;
     submitted = false;
-
+    cities: any[];
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
         private accountService: AccountService,
-        private alertService: AlertService
+        private alertService: AlertService,
+        private cityService: CityService
     ) { }
 
     ngOnInit() {
+
+        this.cityService.getAll()
+            .pipe(first())
+            .subscribe(cities => this.cities = cities);
+
+
+
         this.form = this.formBuilder.group({
             title: ['', Validators.required],
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
-            identificationNumber: ['', Validators.required],
             address: ['', Validators.required],
             sector: ['', Validators.required],
             state: ['', Validators.required],
-            city: ['', Validators.required],
             phone: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(6)]],
-            confirmPassword: ['', Validators.required],
+            confirmPassword: ['', Validators.required],            
+            identificationNumber: ['', Validators.required],
             acceptTerms: [false, Validators.requiredTrue]
         }, {
             validator: MustMatch('password', 'confirmPassword')
